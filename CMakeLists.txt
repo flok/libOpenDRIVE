@@ -66,3 +66,33 @@ if(NOT EMSCRIPTEN)
     add_executable(test-xodr test.cpp)
     target_link_libraries(test-xodr OpenDrive)
 endif()
+
+add_subdirectory(Thirdparty/pybind11)
+find_package(Python COMPONENTS Interpreter Development REQUIRED)
+include_directories(${pybind11_INCLUDE_DIRS})
+include_directories(${PYTHON_INCLUDE_DIRS})
+include_directories(${PYBIND11_INCLUDE_DIRS})
+link_directories(${Python_LIBRARY_DIRS})
+
+pybind11_add_module(PyOpenDrive
+src/Geometries/Arc.cpp
+src/Geometries/CubicSpline.cpp
+src/Geometries/Line.cpp
+src/Geometries/ParamPoly3.cpp
+src/Geometries/RoadGeometry.cpp
+src/Geometries/Spiral.cpp
+src/Geometries/Spiral/odrSpiral.cpp
+src/Lane.cpp
+src/LaneSection.cpp
+src/Mesh.cpp
+src/OpenDriveMap.cpp
+src/RefLine.cpp
+src/Road.cpp
+src/RoadMark.cpp
+src/RoadObject.cpp
+src/RoutingGraph.cpp
+Thirdparty/pugixml/pugixml.cpp
+src/Python.cpp # PYBIND11 Specific Code
+)
+
+target_link_libraries(PyOpenDrive PUBLIC OpenDrive PUBLIC)
