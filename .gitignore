@@ -10,3 +10,4 @@ Viewer/libOpenDrive.*
 Viewer/OpenDrive.*
 Viewer/ModuleOpenDrive.*
 Viewer/*.data
+Thirdparty/pybind11
