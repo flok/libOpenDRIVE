@@ -1,7 +1,11 @@
 # Copy the pyd file from the build folder in the same folder as this python file
 import argparse
-from build.Debug.PyOpenDrive import OpenDriveMap
+import os
 
+if os.name == 'nt':
+    from build.Debug.PyOpenDrive import OpenDriveMap
+else:
+    from build.PyOpenDrive import OpenDriveMap
 # argument parser
 parser = argparse.ArgumentParser(description="Test application using python binding of libOpenDRIVE")
 parser.add_argument("xodr", type=str, help="Path to the to be loaded xodr file")
