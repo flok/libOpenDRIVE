@@ -25,6 +25,7 @@ struct HeightOffset
 struct LaneKey
 {
     LaneKey(std::string road_id, double lanesection_s0, int lane_id);
+    std::string to_string() const;
 
     std::string road_id = "";
     double      lanesection_s0 = 0;
@@ -69,5 +70,20 @@ struct std::equal_to<odr::LaneKey>
     bool operator()(const odr::LaneKey& lhs, const odr::LaneKey& rhs) const
     {
         return (lhs.road_id == rhs.road_id) && (lhs.lanesection_s0 == rhs.lanesection_s0) && (lhs.lane_id == rhs.lane_id);
+    }
+};
+
+template<>
+struct std::less<odr::LaneKey>
+{
+    bool operator()(const odr::LaneKey& lhs, const odr::LaneKey& rhs) const
+    {
+        if (lhs.road_id != rhs.road_id)
+            return lhs.road_id < rhs.road_id;
+        if (lhs.lanesection_s0 != rhs.lanesection_s0)
+            return lhs.lanesection_s0 < rhs.lanesection_s0;
+        if (lhs.lane_id != rhs.lane_id)
+            return lhs.lane_id < rhs.lane_id;
+        return false;
     }
 };
