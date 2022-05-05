@@ -1,10 +1,14 @@
 #include "OpenDriveMap.h"
 #include "Road.h"
+#include "Geometries/RoadGeometry.h"
+#include "Geometries/Arc.h"
+#include "Geometries/Line.h"
+#include "Geometries/Spiral.h"
 #include "Utils.hpp"
 #include "XmlNode.h"
 #include "pybind11/include/pybind11/pybind11.h"
-#include <memory>
 #include <pybind11/include/pybind11/stl.h>
+#include <pybind11/include/pybind11/stl_bind.h>
 namespace py = pybind11;
 
 using namespace odr;
@@ -27,7 +31,7 @@ PYBIND11_MODULE(PyOpenDrive, m)
         .def(py::init<std::string, std::string>())
         .def_readwrite("max", &SpeedRecord::max)
         .def_readwrite("unit", &SpeedRecord::unit);
-    py::enum_<RoadLink::Type>(m, "Type")
+    py::enum_<RoadLink::Type>(m, "RoadLinkType")
         .value("Type_None", RoadLink::Type::Type_None)
         .value("Type_Road", RoadLink::Type::Type_Road)
         .value("Type_Junction", RoadLink::Type::Type_Junction)
@@ -37,13 +41,89 @@ PYBIND11_MODULE(PyOpenDrive, m)
         .value("Side_Left", Crossfall::Side::Side_Left)
         .value("Side_Right", Crossfall::Side::Side_Right)
         .export_values();
-    py::class_<Crossfall>(m, "Crossfall").def(py::init<>()).def("get_crossfall", &Crossfall::get_crossfall).def_readwrite("sides", &Crossfall::sides);
-    py::class_<RefLine>(m, "RefLine").def(py::init<std::string, double>()).def(py::init<const RefLine&>());
+
+   // py::class_<Vec>(m, "Vec");
+    py::class_<Vec1D>(m, "Vec1D");
+    py::class_<Vec2D>(m, "Vec2D");
+    py::class_<Vec3D>(m, "Vec3D");
+    py::class_<Line3D>(m, "Line3D");
+
+    py::class_<Mesh3D>(m, "Mesh3D")
+        .def(py::init<>())
+        .def("add_mesh", &Mesh3D::add_mesh)
+        .def("get_obj", &Mesh3D::get_obj)
+        .def_readwrite("vertices", &Mesh3D::vertices)
+        .def_readwrite("indices", &Mesh3D::indices)
+        .def_readwrite("normals", &Mesh3D::normals)
+        .def_readwrite("st_coordinates", &Mesh3D::st_coordinates);
+
+    py::class_<RoadObjectRepeat>(m, "RoadObjectRepeat")
+        .def(py::init<double, double, double, double, double, double, double, double, double, double, double>())
+        .def_readwrite("s0", &RoadObjectRepeat::s0)
+        .def_readwrite("length", &RoadObjectRepeat::length)
+        .def_readwrite("distance", &RoadObjectRepeat::distance)
+        .def_readwrite("t_start", &RoadObjectRepeat::t_start)
+        .def_readwrite("t_end", &RoadObjectRepeat::t_end)
+        .def_readwrite("width_start", &RoadObjectRepeat::width_start)
+        .def_readwrite("width_end", &RoadObjectRepeat::width_end)
+        .def_readwrite("height_start", &RoadObjectRepeat::height_start)
+        .def_readwrite("height_end", &RoadObjectRepeat::height_end)
+        .def_readwrite("z_offset_start", &RoadObjectRepeat::z_offset_start)
+        .def_readwrite("z_offset_end", &RoadObjectRepeat::z_offset_end);
+
+    py::enum_<RoadObjectCorner::Type>(m, "RoadCornerType")
+        .value("Type_Local_RelZ", RoadObjectCorner::Type::Type_Local_RelZ)
+        .value("Type_Local_AbsZ", RoadObjectCorner::Type::Type_Local_AbsZ)
+        .value("Type_Road", RoadObjectCorner::Type::Type_Road)
+        .export_values();
+
+    py::class_<RoadObjectCorner>(m, "RoadObjectCorner")
+        .def(py::init<Vec3D, double, RoadObjectCorner::Type>())
+        .def_readwrite("pt", &RoadObjectCorner::pt)
+        .def_readwrite("height", &RoadObjectCorner::height)
+        .def_readwrite("type", &RoadObjectCorner::type);
+
+    py::class_<RoadObject>(m, "RoadObject")
+        .def(py::init<std::string, std::string, double, double, double, double, double, double, double, double, double, double, double, std::string, std::string, std::string>())
+        .def("get_cylinder", &RoadObject::get_cylinder)
+        .def("get_box", &RoadObject::get_box)
+        .def_readwrite("road_id", &RoadObject::road_id)
+        .def_readwrite("id", &RoadObject::id)
+        .def_readwrite("type", &RoadObject::type)
+        .def_readwrite("name", &RoadObject::name)
+        .def_readwrite("orientation", &RoadObject::orientation)
+        .def_readwrite("s0", &RoadObject::s0)
+        .def_readwrite("t0", &RoadObject::t0)
+        .def_readwrite("z0", &RoadObject::z0)
+        .def_readwrite("length", &RoadObject::length)
+        .def_readwrite("valid_length", &RoadObject::valid_length)
+        .def_readwrite("width", &RoadObject::width)
+        .def_readwrite("radius", &RoadObject::radius)
+        .def_readwrite("height", &RoadObject::height)
+        .def_readwrite("hdg", &RoadObject::hdg)
+        .def_readwrite("pitch", &RoadObject::pitch)
+        .def_readwrite("roll", &RoadObject::roll)
+        .def_readwrite("repeats", &RoadObject::repeats)
+        .def_readwrite("outline", &RoadObject::outline);
+
+    py::class_<Crossfall>(m, "Crossfall")
+        .def(py::init<>()).def("get_crossfall", &Crossfall::get_crossfall)
+        .def_readwrite("sides", &Crossfall::sides);
+    
+    py::class_<RefLine>(m, "RefLine")
+        .def(py::init<std::string, double>())
+        .def(py::init<const RefLine&>())
+        .def_readwrite("road_id", &RefLine::road_id);
+        //.def_readwrite("s0_to_geometry", &RefLine::s0_to_geometry);
+        //.def("get_geometries", py::overload_cast<>(&RefLine::get_geometries, py::const_))
+        //.def("get_geometries", py::overload_cast<>(&RefLine::get_geometries));
+
     py::enum_<RoadLink::ContactPoint>(m, "ContactPoint")
         .value("ContactPoint_None", RoadLink::ContactPoint::ContactPoint_None)
         .value("ContactPoint_Start", RoadLink::ContactPoint::ContactPoint_Start)
         .value("ContactPoint_End", RoadLink::ContactPoint::ContactPoint_End)
         .export_values();
+
     py::class_<RoadNeighbor>(m, "RoadNeighbor")
         .def(py::init<std::string, std::string, std::string>())
         .def_readwrite("id", &RoadNeighbor::id)
@@ -58,24 +138,24 @@ PYBIND11_MODULE(PyOpenDrive, m)
         .def(py::init<std::string, double, std::string, std::string>())
         .def("get_lanesections", &Road::get_lanesections)
         .def("get_lanesection", &Road::get_lanesection)
-        .def("get_road_objects", &Road::get_road_object_mesh)
+        .def("get_road_objects", &Road::get_road_objects)
         .def("get_lanesection_s0", &Road::get_lanesection_s0)
         .def("get_lanesection_end", py::overload_cast<const LaneSection&>(&Road::get_lanesection_end, py::const_))
         .def("get_lanesection_end", py::overload_cast<const double&>(&Road::get_lanesection_end, py::const_))
         .def("get_lanesection_length", py::overload_cast<const LaneSection&>(&Road::get_lanesection_length, py::const_))
         .def("get_lanesection_length", py::overload_cast<const double&>(&Road::get_lanesection_length, py::const_))
         .def("get_xyz", &Road::get_xyz)
-        // Need to implement further types
-        /* .def("get_surface_pt", &Road::get_surface_pt)
-         .def("get_lane_border_line", &Road::get_lane_border_line)
-         .def("get_lane_border_line", &Road::get_lane_border_line)
-         .def("get_lane_mesh", &Road::get_lane_mesh)
-         .def("get_lane_mesh", &Road::get_lane_mesh)
-         .def("get_roadmark_mesh", &Road::get_roadmark_mesh)
-         .def("get_road_object_mesh", &Road::get_road_object_mesh)
-         .def("approximate_lane_border_linear", &Road::approximate_lane_border_linear)
-         .def("approximate_lane_border_linear", &Road::approximate_lane_border_linear)
-       */
+        .def("get_surface_pt", &Road::get_surface_pt)
+        .def("get_lane_border_line", py::overload_cast<const Lane&, double, double, double, bool>(&Road::get_lane_border_line, py::const_))
+        .def("get_lane_border_line", py::overload_cast<const Lane&, double, bool>(&Road::get_lane_border_line, py::const_))
+        .def("get_lane_mesh", py::overload_cast<const Lane&, double, double, double, std::vector<uint32_t>*>(&Road::get_lane_mesh, py::const_))
+        .def("get_lane_mesh", py::overload_cast<const Lane&, double, std::vector<uint32_t>*>(&Road::get_lane_mesh, py::const_))
+        .def("get_roadmark_mesh", &Road::get_roadmark_mesh)
+        .def("get_road_object_mesh", &Road::get_road_object_mesh)
+
+        .def("approximate_lane_border_linear", py::overload_cast<const Lane&, double, double, double, bool>(&Road::approximate_lane_border_linear, py::const_))
+        .def("approximate_lane_border_linear", py::overload_cast<const Lane&, double, bool>(&Road::approximate_lane_border_linear, py::const_))
+       
         .def_readwrite("length", &Road::length)
         .def_readwrite("id", &Road::id)
         .def_readwrite("junction", &Road::junction)
@@ -89,8 +169,8 @@ PYBIND11_MODULE(PyOpenDrive, m)
         //.def_readwrite("ref_line", &Road::ref_line) // Fix RoadGeometry Delete
         .def_readwrite("s_to_lanesection", &Road::s_to_lanesection)
         .def_readwrite("s_to_type", &Road::s_to_type)
-        .def_readwrite("s_to_speed", &Road::s_to_speed);
-    //.def_readwrite("id_to_object", &Road::id_to_object); // Not working cause of RoadGeometry
+        .def_readwrite("s_to_speed", &Road::s_to_speed)
+        .def_readwrite("id_to_object", &Road::id_to_object); // Not working cause of RoadGeometry
 
     py::class_<OpenDriveMap>(m, "OpenDriveMap")
         .def(py::init<const std::string&, const OpenDriveMapConfig&>(), py::arg("xodr_file") = "", py::arg("config") = OpenDriveMapConfig{})
@@ -204,7 +284,68 @@ PYBIND11_MODULE(PyOpenDrive, m)
         .def_readwrite("id_to_controller", &Junction::id_to_controller)
         .def_readwrite("priorities", &Junction::priorities);
 
+    py::enum_<GeometryType>(m, "GeometryType")
+        .value("GeometryType_Line", GeometryType::GeometryType_Line)
+        .value("GeometryType_Spiral", GeometryType::GeometryType_Spiral)
+        .value("GeometryType_Arc", GeometryType::GeometryType_Arc)
+        .value("GeometryType_ParamPoly3", GeometryType::GeometryType_ParamPoly3)
+        .export_values();
+/*
+    class PyRoadGeometry : public RoadGeometry {
+    public:
+        using RoadGeometry::RoadGeometry;
+
+        std::unique_ptr<RoadGeometry> clone() override {
+            PYBIND11_OVERRIDE_PURE(
+                std::unique_ptr<RoadGeometry>, 
+                RoadGeometry,
+                clone
+            );
+        }
+        
+    };*/
+
+    // Abstract class, we dont need a py::init function definition
+    py::class_<RoadGeometry>(m, "RoadGeometry")
+       /* .def("clone", &RoadGeometry::clone)
+        .def("get_xy", &RoadGeometry::get_xy)
+        .def("get_grad", &RoadGeometry::get_grad)
+        .def("approximate_linear", &RoadGeometry::approximate_linear)*/
+        .def_readwrite("s0", &RoadGeometry::s0)
+        .def_readwrite("x0", &RoadGeometry::x0)
+        .def_readwrite("y0", &RoadGeometry::y0)
+        .def_readwrite("hdg0", &RoadGeometry::hdg0)
+        .def_readwrite("length", &RoadGeometry::length)
+        .def_readwrite("type", &RoadGeometry::type);
+
     // Geometries
+    py::class_<Arc, RoadGeometry>(m, "Arc")
+        .def(py::init<double, double, double, double, double, double>())
+        .def("clone", &Arc::clone)
+        .def("get_xy", &Arc::get_xy)
+        .def("get_grad", &Arc::get_grad)
+        .def("approximate_linear", &Arc::approximate_linear)
+        .def_readwrite("curvature", &Arc::curvature);
+
+    py::class_<Line, RoadGeometry>(m, "Line")
+        .def(py::init<double, double, double, double, double>())
+        .def("clone", &Line::clone)
+        .def("get_xy", &Line::get_xy)
+        .def("get_grad", &Line::get_grad)
+        .def("approximate_linear", &Line::approximate_linear);
+
+    py::class_<Spiral, RoadGeometry>(m, "Spiral")
+        .def(py::init<double, double, double, double, double, double, double>())
+        .def("clone", &Spiral::clone)
+        .def("get_xy", &Spiral::get_xy)
+        .def("get_grad", &Spiral::get_grad)
+        .def("approximate_linear", &Spiral::approximate_linear)
+        .def_readwrite("curv_start", &Spiral::curv_start)
+        .def_readwrite("curv_end", &Spiral::curv_end)
+        .def_readwrite("s_start", &Spiral::s_start)
+        .def_readwrite("s_end", &Spiral::s_end)
+        .def_readwrite("c_dot", &Spiral::c_dot);
+
     py::class_<Poly3>(m, "Poly3")
         .def(py::init<>())
         .def(py::init<double, double, double, double, double>())
