@@ -109,14 +109,25 @@ PYBIND11_MODULE(PyOpenDrive, m)
     py::class_<Crossfall>(m, "Crossfall")
         .def(py::init<>()).def("get_crossfall", &Crossfall::get_crossfall)
         .def_readwrite("sides", &Crossfall::sides);
-    
+
     py::class_<RefLine>(m, "RefLine")
         .def(py::init<std::string, double>())
         .def(py::init<const RefLine&>())
-        .def_readwrite("road_id", &RefLine::road_id);
-        //.def_readwrite("s0_to_geometry", &RefLine::s0_to_geometry);
-        //.def("get_geometries", py::overload_cast<>(&RefLine::get_geometries, py::const_))
-        //.def("get_geometries", py::overload_cast<>(&RefLine::get_geometries));
+        .def_readwrite("road_id", &RefLine::road_id)
+        .def("get_geometries", py::overload_cast<>(&RefLine::get_geometries, py::const_))
+        .def("get_geometries", py::overload_cast<>(&RefLine::get_geometries))
+        .def("get_geometry_s0", &RefLine::get_geometry_s0)
+        .def("get_geometry", py::overload_cast<double>(&RefLine::get_geometry, py::const_))
+        .def("get_geometry", py::overload_cast<double>(&RefLine::get_geometry))
+        .def("get_xyz", &RefLine::get_xyz)
+        .def("get_grad", &RefLine::get_grad)
+        .def("get_line", &RefLine::get_line)
+        .def("match", &RefLine::match)
+        .def("approximate_linear", &RefLine::approximate_linear)
+        //.def_readwrite("s0_to_geometry", &RefLine::s0_to_geometry)
+        .def_readwrite("length", &RefLine::length)
+        .def_readwrite("elevation_profile", &RefLine::elevation_profile);
+
 
     py::enum_<RoadLink::ContactPoint>(m, "ContactPoint")
         .value("ContactPoint_None", RoadLink::ContactPoint::ContactPoint_None)
@@ -166,11 +177,11 @@ PYBIND11_MODULE(PyOpenDrive, m)
         .def_readwrite("lane_offset", &Road::lane_offset)
         .def_readwrite("superelevation", &Road::superelevation)
         .def_readwrite("crossfall", &Road::crossfall)
-        //.def_readwrite("ref_line", &Road::ref_line) // Fix RoadGeometry Delete
+        .def_readonly("ref_line", &Road::ref_line) // Fix RoadGeometry Delete
         .def_readwrite("s_to_lanesection", &Road::s_to_lanesection)
         .def_readwrite("s_to_type", &Road::s_to_type)
         .def_readwrite("s_to_speed", &Road::s_to_speed)
-        .def_readwrite("id_to_object", &Road::id_to_object); // Not working cause of RoadGeometry
+        .def_readwrite("id_to_object", &Road::id_to_object);
 
     py::class_<OpenDriveMap>(m, "OpenDriveMap")
         .def(py::init<const std::string&, const OpenDriveMapConfig&>(), py::arg("xodr_file") = "", py::arg("config") = OpenDriveMapConfig{})
@@ -290,27 +301,13 @@ PYBIND11_MODULE(PyOpenDrive, m)
         .value("GeometryType_Arc", GeometryType::GeometryType_Arc)
         .value("GeometryType_ParamPoly3", GeometryType::GeometryType_ParamPoly3)
         .export_values();
-/*
-    class PyRoadGeometry : public RoadGeometry {
-    public:
-        using RoadGeometry::RoadGeometry;
-
-        std::unique_ptr<RoadGeometry> clone() override {
-            PYBIND11_OVERRIDE_PURE(
-                std::unique_ptr<RoadGeometry>, 
-                RoadGeometry,
-                clone
-            );
-        }
-        
-    };*/
 
     // Abstract class, we dont need a py::init function definition
     py::class_<RoadGeometry>(m, "RoadGeometry")
-       /* .def("clone", &RoadGeometry::clone)
+        .def("clone", &RoadGeometry::clone)
         .def("get_xy", &RoadGeometry::get_xy)
         .def("get_grad", &RoadGeometry::get_grad)
-        .def("approximate_linear", &RoadGeometry::approximate_linear)*/
+        .def("approximate_linear", &RoadGeometry::approximate_linear)
         .def_readwrite("s0", &RoadGeometry::s0)
         .def_readwrite("x0", &RoadGeometry::x0)
         .def_readwrite("y0", &RoadGeometry::y0)
