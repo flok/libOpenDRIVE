@@ -5,6 +5,13 @@
 #include <string>
 #include <vector>
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+namespace nb = nanobind;
+#endif
+
 namespace odr
 {
 
@@ -21,4 +28,7 @@ struct Mesh3D
     std::vector<Vec2D>    st_coordinates;
 };
 
+#ifdef PYTHON_BINDING
+void init_mesh3d(nb::module_& m);
+#endif
 } // namespace odr

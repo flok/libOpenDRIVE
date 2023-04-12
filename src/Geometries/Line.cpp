@@ -22,4 +22,16 @@ Vec2D Line::get_grad(double s) const { return {{std::cos(hdg0), std::sin(hdg0)}}
 
 std::set<double> Line::approximate_linear(double eps) const { return {s0, s0 + length}; }
 
+#ifdef PYTHON_BINDING
+void init_line(nb::module_& m) 
+{
+  nb::class_<Line, RoadGeometry>(m, "Line")
+    .def(nb::init<double, double, double, double, double>())
+    .def("clone", &Line::clone)
+    .def("get_xy", &Line::get_xy)
+    .def("get_grad", &Line::get_grad)
+    .def("approximate_linear", &Line::approximate_linear);
+}
+#endif
+
 } // namespace odr

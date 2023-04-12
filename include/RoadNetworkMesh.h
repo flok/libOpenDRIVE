@@ -1,6 +1,13 @@
 #pragma once
 #include "Mesh.h"
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+namespace nb = nanobind;
+#endif
+
 #include <array>
 #include <map>
 #include <string>
@@ -64,5 +71,9 @@ struct RoadNetworkMesh
     RoadmarksMesh   roadmarks_mesh;
     RoadObjectsMesh road_objects_mesh;
 };
+
+#ifdef PYTHON_BINDING
+void init_roadnetworkmesh(nb::module_& m);
+#endif
 
 } // namespace odr

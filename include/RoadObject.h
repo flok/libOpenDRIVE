@@ -3,6 +3,13 @@
 #include "Mesh.h"
 #include "XmlNode.h"
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+namespace nb = nanobind;
+#endif
+
 #include <string>
 #include <vector>
 
@@ -114,5 +121,9 @@ struct RoadObject : public XmlNode
     std::vector<RoadObjectRepeat>  repeats;
     std::vector<RoadObjectOutline> outlines;
 };
+
+#ifdef PYTHON_BINDING
+void init_roadobject(nb::module_& m);
+#endif
 
 } // namespace odr

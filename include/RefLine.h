@@ -3,6 +3,13 @@
 #include "Geometries/RoadGeometry.h"
 #include "Math.hpp"
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+namespace nb = nanobind;
+#endif
+
 #include <map>
 #include <memory>
 #include <set>
@@ -35,5 +42,9 @@ struct RefLine
 
     std::map<double, std::unique_ptr<RoadGeometry>> s0_to_geometry;
 };
+
+#ifdef PYTHON_BINDING
+void init_refline(nb::module_& m);
+#endif
 
 } // namespace odr

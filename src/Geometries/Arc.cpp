@@ -40,4 +40,17 @@ std::set<double> Arc::approximate_linear(double eps) const
     return s_vals;
 }
 
+#ifdef PYTHON_BINDING
+void init_arc(nb::module_ &m)
+{
+    nb::class_<Arc, RoadGeometry>(m, "Arc")
+        .def(nb::init<double, double, double, double, double, double>())
+        .def("clone", &Arc::clone)
+        .def("get_xy", &Arc::get_xy)
+        .def("get_grad", &Arc::get_grad)
+        .def("approximate_linear", &Arc::approximate_linear)
+        .def_rw("curvature", &Arc::curvature);
+}
+#endif
+
 } // namespace odr

@@ -141,4 +141,27 @@ std::set<double> RefLine::approximate_linear(const double eps, const double s_st
     return s_vals_set;
 }
 
+#ifdef PYTHON_BINDING
+void init_refline(nb::module_& m)
+{
+    nb::class_<RefLine>(m, "RefLine")
+        .def(nb::init<std::string, double>())
+        .def(nb::init<const RefLine&>())
+        .def_rw("road_id", &RefLine::road_id)
+        .def("get_geometries", nb::overload_cast<>(&RefLine::get_geometries, nb::const_))
+        .def("get_geometries", nb::overload_cast<>(&RefLine::get_geometries))
+        .def("get_geometry_s0", &RefLine::get_geometry_s0)
+        .def("get_geometry", nb::overload_cast<double>(&RefLine::get_geometry, nb::const_))
+        .def("get_geometry", nb::overload_cast<double>(&RefLine::get_geometry))
+        .def("get_xyz", &RefLine::get_xyz)
+        .def("get_grad", &RefLine::get_grad)
+        .def("get_line", &RefLine::get_line)
+        .def("match", &RefLine::match)
+        .def("approximate_linear", &RefLine::approximate_linear)
+        .def_rw("s0_to_geometry", &RefLine::s0_to_geometry)
+        .def_rw("length", &RefLine::length)
+        .def_rw("elevation_profile", &RefLine::elevation_profile);
+}
+#endif
+
 } // namespace odr

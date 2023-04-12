@@ -6,6 +6,15 @@
 
 #include <pugixml/pugixml.hpp>
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/bind_map.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+    #include <nanobind/stl/vector.h>
+namespace nb = nanobind;
+#endif
+
 #include <map>
 #include <string>
 #include <vector>
@@ -39,5 +48,9 @@ public:
     std::map<std::string, Road>     id_to_road;
     std::map<std::string, Junction> id_to_junction;
 };
+
+#ifdef PYTHON_BINDING
+void init_opendrivemap(nanobind::module_& m);
+#endif
 
 } // namespace odr

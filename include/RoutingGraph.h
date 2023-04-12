@@ -1,6 +1,14 @@
 #pragma once
 #include "Lane.h"
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/bind_map.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+namespace nb = nanobind;
+#endif
+
 #include <cstddef>
 #include <functional>
 #include <memory>
@@ -27,6 +35,10 @@ struct WeightedLaneKey : public LaneKey
 
     double weight = 0;
 };
+
+#ifdef PYTHON_BINDING
+void init_routinggraph(nb::module_& m);
+#endif
 
 } // namespace odr
 

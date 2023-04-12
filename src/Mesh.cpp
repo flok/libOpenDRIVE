@@ -45,4 +45,23 @@ std::string Mesh3D::get_obj() const
     return ss_obj.str();
 }
 
+#ifdef PYTHON_BINDING
+void init_mesh3d(nb::module_& m)
+{
+    nb::class_<Vec1D>(m, "Vec1D");
+    nb::class_<Vec2D>(m, "Vec2D");
+    nb::class_<Vec3D>(m, "Vec3D");
+    nb::class_<Line3D>(m, "Line3D");
+
+    nb::class_<Mesh3D>(m, "Mesh3D")
+        .def(nb::init<>())
+        .def("add_mesh", &Mesh3D::add_mesh)
+        .def("get_obj", &Mesh3D::get_obj)
+        .def_rw("vertices", &Mesh3D::vertices)
+        .def_rw("indices", &Mesh3D::indices)
+        .def_rw("normals", &Mesh3D::normals)
+        .def_rw("st_coordinates", &Mesh3D::st_coordinates);
+}
+#endif
+
 } // namespace odr

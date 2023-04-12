@@ -95,4 +95,36 @@ std::vector<RoadMark> Lane::get_roadmarks(const double s_start, const double s_e
     return roadmarks;
 }
 
+#ifdef PYTHON_BINDING
+void init_lane(nb::module_& m)
+{
+    nb::class_<HeightOffset>(m, "HeightOffset")
+        .def(nb::init<double, double>())
+        .def_rw("inner", &HeightOffset::inner)
+        .def_rw("outer", &HeightOffset::outer);
+
+    nb::class_<LaneKey>(m, "LaneKey")
+        .def(nb::init<std::string, double, int>())
+        .def("to_string", &LaneKey::to_string)
+        .def_rw("road_id", &LaneKey::road_id)
+        .def_rw("lanesection_s0", &LaneKey::lanesection_s0)
+        .def_rw("lane_id", &LaneKey::lane_id);
+
+    nb::class_<Lane>(m, "Lane")
+        .def(nb::init<std::string, double, int, bool, std::string>())
+        .def("get_roadmarks", &Lane::get_roadmarks)
+        .def_rw("key", &Lane::key)
+        .def_rw("id", &Lane::id)
+        .def_rw("level", &Lane::level)
+        .def_rw("predecessor", &Lane::predecessor)
+        .def_rw("successor", &Lane::successor)
+        .def_rw("type", &Lane::type)
+        .def_rw("lane_width", &Lane::lane_width)
+        .def_rw("outer_border", &Lane::outer_border)
+        .def_rw("inner_border", &Lane::inner_border)
+        .def_rw("s_to_height_offset", &Lane::s_to_height_offset)
+        .def_rw("roadmark_groups", &Lane::roadmark_groups);
+}
+#endif
+
 } // namespace odr

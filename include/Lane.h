@@ -3,6 +3,13 @@
 #include "RoadMark.h"
 #include "XmlNode.h"
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+namespace nb = nanobind;
+#endif
+
 #include <cstddef>
 #include <functional>
 #include <map>
@@ -52,6 +59,10 @@ struct Lane : public XmlNode
     std::map<double, HeightOffset> s_to_height_offset;
     std::set<RoadMarkGroup>        roadmark_groups;
 };
+
+#ifdef PYTHON_BINDING
+void init_lane(nb::module_& m);
+#endif
 
 } // namespace odr
 

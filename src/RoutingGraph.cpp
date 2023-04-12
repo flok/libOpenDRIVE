@@ -108,4 +108,29 @@ std::vector<LaneKey> RoutingGraph::shortest_path(const LaneKey& from, const Lane
     return path;
 }
 
+#ifdef PYTHON_BINDING
+void init_routinggraph(nb::module_& m)
+{
+    nb::class_<RoutingGraphEdge>(m, "RoutingGraphEdge")
+        .def(nb::init<LaneKey, LaneKey, double>())
+        .def_rw("from", &RoutingGraphEdge::from)
+        .def_rw("to", &RoutingGraphEdge::to)
+        .def_rw("weight", &RoutingGraphEdge::weight);
+
+    nb::class_<WeightedLaneKey, LaneKey>(m, "RoutingGraphEdge")
+        .def(nb::init<const LaneKey, double>())
+        .def(nb::init<const std::string, double, int, double>())
+        .def_rw("weight", &WeightedLaneKey::weight);
+
+    nb::class_<RoutingGraph>(m, "RoutingGraph")
+        .def("add_edge", &RoutingGraph::add_edge)
+        .def("get_lane_successors", &RoutingGraph::get_lane_successors)
+        .def("get_lane_predecessors", &RoutingGraph::get_lane_predecessors)
+        .def("shortest_path", &RoutingGraph::shortest_path)
+        .def_rw("edges", &RoutingGraph::edges)
+        .def_rw("lane_key_to_successors", &RoutingGraph::lane_key_to_successors)
+        .def_rw("lane_key_to_predecessors", &RoutingGraph::lane_key_to_predecessors);
+}
+#endif
+
 } // namespace odr

@@ -1,6 +1,13 @@
 #pragma once
 #include "Math.hpp"
 
+#ifdef PYTHON_BINDING
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/map.h>
+namespace nb = nanobind;
+#endif
+
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -315,5 +322,6 @@ bool check_class_members_equal(const T& obj_a, const T& obj_b, S field, Ss... fi
         return false;
     return check_class_members_equal(obj_a, obj_b, fields...);
 };
+
 
 } // namespace odr

@@ -771,4 +771,29 @@ RoutingGraph OpenDriveMap::get_routing_graph() const
     return routing_graph;
 }
 
+#ifdef PYTHON_BINDING
+
+void init_opendrivemap(nanobind::module_& m)
+{
+    nb::class_<OpenDriveMap>(m, "OpenDriveMap")
+        .def(nb::init<const std::string, bool, bool, bool, bool, bool, bool>(),
+             nb::arg("xodr_file") = "",
+             nb::arg("center_map") = false,
+             nb::arg("with_road_objects") = true,
+             nb::arg("with_lateral_profile") = true,
+             nb::arg("with_lane_height") = true,
+             nb::arg("abs_z_for_for_local_road_obj_outline") = false,
+             nb::arg("fix_spiral_edge_cases") = false)
+        .def("get_roads", &OpenDriveMap::get_roads, "get const roads")
+        .def("get_junctions", &OpenDriveMap::get_junctions, "get const junctions")
+        .def("get_routing_graph", &OpenDriveMap::get_routing_graph, "get routing graph")
+        .def_ro("proj4", &OpenDriveMap::proj4)
+        .def_ro("x_offs", &OpenDriveMap::x_offs)
+        .def_ro("y_offs", &OpenDriveMap::y_offs)
+        .def_ro("id_to_road", &OpenDriveMap::id_to_road)
+        .def_ro("id_to_junction", &OpenDriveMap::id_to_junction)
+        .def_ro("xodr_file", &OpenDriveMap::xodr_file);
+}
+#endif
+
 } // namespace odr

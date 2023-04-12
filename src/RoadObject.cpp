@@ -107,4 +107,82 @@ Mesh3D RoadObject::get_box(const double w, const double l, const double h)
     return box_mesh;
 }
 
+#ifdef PYTHON_BINDING
+void init_roadobject(nb::module_& m)
+{
+    nb::class_<RoadObjectRepeat>(m, "RoadObjectRepeat")
+        .def(nb::init<double, double, double, double, double, double, double, double, double, double, double>())
+        .def_rw("s0", &RoadObjectRepeat::s0)
+        .def_rw("length", &RoadObjectRepeat::length)
+        .def_rw("distance", &RoadObjectRepeat::distance)
+        .def_rw("t_start", &RoadObjectRepeat::t_start)
+        .def_rw("t_end", &RoadObjectRepeat::t_end)
+        .def_rw("width_start", &RoadObjectRepeat::width_start)
+        .def_rw("width_end", &RoadObjectRepeat::width_end)
+        .def_rw("height_start", &RoadObjectRepeat::height_start)
+        .def_rw("height_end", &RoadObjectRepeat::height_end)
+        .def_rw("z_offset_start", &RoadObjectRepeat::z_offset_start)
+        .def_rw("z_offset_end", &RoadObjectRepeat::z_offset_end);
+
+    nb::enum_<RoadObjectCorner::Type>(m, "RoadCornerType")
+        .value("Type_Local_RelZ", RoadObjectCorner::Type::Type_Local_RelZ)
+        .value("Type_Local_AbsZ", RoadObjectCorner::Type::Type_Local_AbsZ)
+        .value("Type_Road", RoadObjectCorner::Type::Type_Road)
+        .export_values();
+
+    nb::class_<RoadObjectCorner>(m, "RoadObjectCorner")
+        .def(nb::init<int, Vec3D, double, RoadObjectCorner::Type>())
+        .def_rw("pt", &RoadObjectCorner::pt)
+        .def_rw("height", &RoadObjectCorner::height)
+        .def_rw("type", &RoadObjectCorner::type);
+
+    nb::class_<RoadObjectOutline>(m, "RoadOBjectOutline")
+        .def(nb::init<int, std::string, std::string, bool, bool>())
+        .def_rw("id", &RoadObjectOutline::fill_type)
+        .def_rw("lane_type", &RoadObjectOutline::lane_type)
+        .def_rw("outer", &RoadObjectOutline::outer)
+        .def_rw("closed", &RoadObjectOutline::closed);
+
+    nb::class_<RoadObject>(m, "RoadObject")
+        .def(nb::init<std::string,
+                      std::string,
+                      double,
+                      double,
+                      double,
+                      double,
+                      double,
+                      double,
+                      double,
+                      double,
+                      double,
+                      double,
+                      double,
+                      std::string,
+                      std::string,
+                      std::string,
+                      std::string,
+                      bool>())
+        .def("get_cylinder", &RoadObject::get_cylinder)
+        .def("get_box", &RoadObject::get_box)
+        .def_rw("road_id", &RoadObject::road_id)
+        .def_rw("id", &RoadObject::id)
+        .def_rw("type", &RoadObject::type)
+        .def_rw("name", &RoadObject::name)
+        .def_rw("orientation", &RoadObject::orientation)
+        .def_rw("s0", &RoadObject::s0)
+        .def_rw("t0", &RoadObject::t0)
+        .def_rw("z0", &RoadObject::z0)
+        .def_rw("length", &RoadObject::length)
+        .def_rw("valid_length", &RoadObject::valid_length)
+        .def_rw("width", &RoadObject::width)
+        .def_rw("radius", &RoadObject::radius)
+        .def_rw("height", &RoadObject::height)
+        .def_rw("hdg", &RoadObject::hdg)
+        .def_rw("pitch", &RoadObject::pitch)
+        .def_rw("roll", &RoadObject::roll)
+        .def_rw("repeats", &RoadObject::repeats)
+        .def_rw("outline", &RoadObject::outlines);
+}
+#endif
+
 } // namespace odr

@@ -2,6 +2,13 @@
 #include "Utils.hpp"
 #include "XmlNode.h"
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+namespace nb = nanobind;
+#endif
+
 #include <cstddef>
 #include <functional>
 #include <map>
@@ -101,5 +108,9 @@ public:
     std::map<std::string, JunctionController> id_to_controller;
     std::set<JunctionPriority>                priorities;
 };
+
+#ifdef PYTHON_BINDING
+void init_junction(nb::module_& m);
+#endif
 
 } // namespace odr

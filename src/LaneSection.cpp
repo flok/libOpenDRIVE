@@ -34,4 +34,15 @@ int LaneSection::get_lane_id(const double s, const double t) const
 
 Lane LaneSection::get_lane(const double s, const double t) const { return this->id_to_lane.at(this->get_lane_id(s, t)); }
 
+#ifdef PYTHON_BINDING
+void init_lanesection(nb::module_& m)
+{
+    nb::class_<LaneSection>(m, "LaneSection")
+        .def(nb::init<std::string, double>())
+        .def("get_lanes", &LaneSection::get_lanes)
+        .def("get_lane_id", &LaneSection::get_lane_id)
+        .def("get_lane", &LaneSection::get_lane);
+}
+#endif
+
 } // namespace odr

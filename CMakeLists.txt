@@ -76,7 +76,7 @@ endif()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/nanobind)
 
-nanobind_add_module(pyopendrive 
+nanobind_add_module(pyopendrive
     src/Geometries/Arc.cpp
     src/Geometries/CubicSpline.cpp
     src/Geometries/Line.cpp
@@ -118,5 +118,7 @@ nanobind_add_module(pyopendrive
     )
 
 target_compile_definitions(pyopendrive PRIVATE PYTHON_BINDING)
+
+install(TARGETS pyopendrive LIBRARY DESTINATION .)
 
 endif()

@@ -2,6 +2,13 @@
 #include "Math.hpp"
 #include "RoadGeometry.h"
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+namespace nb = nanobind;
+#endif
+
 #include <memory>
 #include <set>
 
@@ -19,5 +26,9 @@ struct Line : public RoadGeometry
 
     std::set<double> approximate_linear(double eps) const override;
 };
+
+#ifdef PYTHON_BINDING
+void init_line(nb::module_& m);
+#endif
 
 } // namespace odr

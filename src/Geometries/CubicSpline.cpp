@@ -233,4 +233,37 @@ std::set<double> CubicSpline::approximate_linear(double eps, double s_start, dou
     return s_vals;
 }
 
+#ifdef PYTHON_BINDING
+void init_cubicspline(nb::module_& m)
+{
+  nb::class_<CubicSpline>(m, "CubicSpline")
+    .def(nb::init<>())
+    .def("size", &CubicSpline::size)
+    .def("get", &CubicSpline::get)
+    .def("get_grad", &CubicSpline::get)
+    .def("get_max", &CubicSpline::get_max)
+    .def("negate", &CubicSpline::negate)
+    .def("add", &CubicSpline::add)
+    .def("get_poly", &CubicSpline::get_poly)
+    .def("approximate_linear", &CubicSpline::approximate_linear)
+    .def_rw("s0_to_poly", &CubicSpline::s0_to_poly);
+}
+
+void init_poly3(nb::module_& m)
+{
+  nb::class_<Poly3>(m, "Poly3")
+    .def(nb::init<>())
+    .def(nb::init<double, double, double, double, double>())
+    .def("get", &Poly3::get)
+    .def("get_grad", &Poly3::get)
+    .def("get_max", &Poly3::get_max)
+    .def("negate", &Poly3::negate)
+    .def("approximate_linear", &Poly3::approximate_linear)
+    .def_rw("a", &Poly3::a)
+    .def_rw("b", &Poly3::b)
+    .def_rw("c", &Poly3::c)
+    .def_rw("d", &Poly3::d);
+}
+#endif
+
 } // namespace odr

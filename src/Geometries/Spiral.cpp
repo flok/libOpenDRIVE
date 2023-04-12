@@ -52,4 +52,21 @@ std::set<double> Spiral::approximate_linear(double eps) const
     return s_vals;
 }
 
+#ifdef PYTHON_BINDING
+void init_spiral(nb::module_& m)
+{
+  nb::class_<Spiral, RoadGeometry>(m, "Spiral")
+    .def(nb::init<double, double, double, double, double, double, double>())
+    .def("clone", &Spiral::clone)
+    .def("get_xy", &Spiral::get_xy)
+    .def("get_grad", &Spiral::get_grad)
+    .def("approximate_linear", &Spiral::approximate_linear)
+    .def_rw("curv_start", &Spiral::curv_start)
+    .def_rw("curv_end", &Spiral::curv_end)
+    .def_rw("s_start", &Spiral::s_start)
+    .def_rw("s_end", &Spiral::s_end)
+    .def_rw("c_dot", &Spiral::c_dot);
+}
+#endif
+
 } // namespace odr

@@ -93,4 +93,8 @@ Mesh3D RoadNetworkMesh::get_mesh() const
     return out_mesh;
 }
 
+#ifdef PYTHON_BINDING
+void init_roadnetworkmesh(nb::module_& m) {}
+#endif
+
 } // namespace odr

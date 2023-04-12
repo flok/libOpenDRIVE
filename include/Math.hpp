@@ -8,6 +8,13 @@
 #include <vector>
 #include <functional>
 
+#ifdef PYTHON_BINDING
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/map.h>
+namespace nb = nanobind;
+#endif
+
 namespace odr
 {
 

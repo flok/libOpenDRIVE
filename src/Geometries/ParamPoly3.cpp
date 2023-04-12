@@ -2,6 +2,13 @@
 #include "Geometries/RoadGeometry.h"
 #include "Math.hpp"
 
+#ifdef PYTHON_BINDING
+#include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/map.h>
+namespace nb = nanobind;
+#endif
+
 #include <array>
 #include <cmath>
 #include <map>
@@ -79,5 +86,34 @@ std::set<double> ParamPoly3::approximate_linear(double eps) const
 
     return s_vals;
 }
+
+#ifdef PYTHON_BINDING
+void init_parampoly3(nb::module_& m)
+{
+  nb::class_<ParamPoly3, RoadGeometry>(m, "ParamPoly3")
+    .def(nb::init<double, double, double, double, double, 
+                  double, double, double, double, double, 
+                  double, double, double, bool>())
+    .def("get_xy", &ParamPoly3::get_xy)
+    .def("get_grad", &ParamPoly3::get_grad)
+    .def("approximate_linear", &ParamPoly3::approximate_linear)
+    //.def("clone", &ParamPoly3::clone)
+    .def_rw("s0", &ParamPoly3::s0)
+    .def_rw("x0", &ParamPoly3::x0)
+    .def_rw("y0", &ParamPoly3::y0)
+    .def_rw("hdg0", &ParamPoly3::hdg0)
+    .def_rw("length", &ParamPoly3::length)
+    .def_rw("aU", &ParamPoly3::aU)
+    .def_rw("bU", &ParamPoly3::bU)
+    .def_rw("cU", &ParamPoly3::cU)
+    .def_rw("dU", &ParamPoly3::dU)
+    .def_rw("aV", &ParamPoly3::aV)
+    .def_rw("bV", &ParamPoly3::bV)
+    .def_rw("cV", &ParamPoly3::cV)
+    .def_rw("dV", &ParamPoly3::dV)
+    .def_rw("pRange_normalized", &ParamPoly3::pRange_normalized)
+    .def_rw("cubic_bezier", &ParamPoly3::cubic_bezier);
+}
+#endif
 
 } // namespace odr

@@ -533,4 +533,77 @@ Mesh3D Road::get_road_object_mesh(const RoadObject& road_object, const double ep
     return road_obj_mesh;
 }
 
+#ifdef PYTHON_BINDING
+void init_road(nb::module_& m)
+{
+    nb::enum_<RoadLink::Type>(m, "RoadLinkType")
+        .value("Type_None", RoadLink::Type::Type_None)
+        .value("Type_Road", RoadLink::Type::Type_Road)
+        .value("Type_Junction", RoadLink::Type::Type_Junction)
+        .export_values();
+
+    nb::enum_<Crossfall::Side>(m, "Side")
+        .value("Side_Both", Crossfall::Side::Side_Both)
+        .value("Side_Left", Crossfall::Side::Side_Left)
+        .value("Side_Right", Crossfall::Side::Side_Right)
+        .export_values();
+
+    nb::class_<RoadLink>(m, "RoadLink")
+        .def(nb::init<std::string, RoadLink::Type, RoadLink::ContactPoint>())
+        .def_rw("id", &RoadLink::id)
+        .def_rw("type", &RoadLink::type)
+        .def_rw("contact_point", &RoadLink::contact_point);
+
+    nb::class_<RoadNeighbor>(m, "RoadNeighbor")
+        .def(nb::init<std::string, std::string, std::string>())
+        .def_rw("id", &RoadNeighbor::id)
+        .def_rw("side", &RoadNeighbor::side)
+        .def_rw("direction", &RoadNeighbor::direction);
+
+    nb::class_<SpeedRecord>(m, "SpeedRecord")
+        .def(nb::init<std::string, std::string>())
+        .def_rw("max", &SpeedRecord::max)
+        .def_rw("unit", &SpeedRecord::unit);
+
+    nb::class_<Road>(m, "Road")
+        .def(nb::init<std::string, double, std::string, std::string>())
+        .def("get_lanesections", &Road::get_lanesections)
+        .def("get_lanesection", &Road::get_lanesection)
+        .def("get_road_objects", &Road::get_road_objects)
+        .def("get_lanesection_s0", &Road::get_lanesection_s0)
+        .def("get_lanesection_end", nb::overload_cast<const LaneSection&>(&Road::get_lanesection_end, nb::const_))
+        .def("get_lanesection_end", nb::overload_cast<const double>(&Road::get_lanesection_end, nb::const_))
+        .def("get_lanesection_length", nb::overload_cast<const LaneSection&>(&Road::get_lanesection_length, nb::const_))
+        .def("get_lanesection_length", nb::overload_cast<const double>(&Road::get_lanesection_length, nb::const_))
+        .def("get_xyz", &Road::get_xyz)
+        .def("get_surface_pt", &Road::get_surface_pt)
+        .def("get_lane_border_line", nb::overload_cast<const Lane&, double, double, double, bool>(&Road::get_lane_border_line, nb::const_))
+        .def("get_lane_border_line", nb::overload_cast<const Lane&, double, bool>(&Road::get_lane_border_line, nb::const_))
+        .def("get_lane_mesh", nb::overload_cast<const Lane&, double, double, double, std::vector<uint32_t>*>(&Road::get_lane_mesh, nb::const_))
+        .def("get_lane_mesh", nb::overload_cast<const Lane&, double, std::vector<uint32_t>*>(&Road::get_lane_mesh, nb::const_))
+        .def("get_roadmark_mesh", &Road::get_roadmark_mesh)
+        .def("get_road_object_mesh", &Road::get_road_object_mesh)
+
+        .def("approximate_lane_border_linear",
+             nb::overload_cast<const Lane&, double, double, double, bool>(&Road::approximate_lane_border_linear, nb::const_))
+        .def("approximate_lane_border_linear", nb::overload_cast<const Lane&, double, bool>(&Road::approximate_lane_border_linear, nb::const_))
+
+        .def_rw("length", &Road::length)
+        .def_rw("id", &Road::id)
+        .def_rw("junction", &Road::junction)
+        .def_rw("name", &Road::name)
+        .def_rw("predecessor", &Road::predecessor)
+        .def_rw("successor", &Road::successor)
+        .def_rw("neighbors", &Road::neighbors)
+        .def_rw("lane_offset", &Road::lane_offset)
+        .def_rw("superelevation", &Road::superelevation)
+        .def_rw("crossfall", &Road::crossfall)
+        .def_ro("ref_line", &Road::ref_line) // Fix RoadGeometry Delete
+        .def_rw("s_to_lanesection", &Road::s_to_lanesection)
+        .def_rw("s_to_type", &Road::s_to_type)
+        .def_rw("s_to_speed", &Road::s_to_speed)
+        .def_rw("id_to_object", &Road::id_to_object);
+}
+#endif
+
 } // namespace odr

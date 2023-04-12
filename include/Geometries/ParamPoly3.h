@@ -3,6 +3,13 @@
 #include "Math.hpp"
 #include "RoadGeometry.h"
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+namespace nb = nanobind;
+#endif
+
 #include <memory>
 #include <set>
 
@@ -37,5 +44,9 @@ struct ParamPoly3 : public RoadGeometry
     bool          pRange_normalized = true;
     CubicBezier2D cubic_bezier;
 };
+
+#ifdef PYTHON_BINDING
+void init_parampoly3(nb::module_& m);
+#endif
 
 } // namespace odr

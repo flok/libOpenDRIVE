@@ -2,6 +2,13 @@
 #include "Utils.hpp"
 #include "XmlNode.h"
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+namespace nb = nanobind;
+#endif
+
 #include <functional>
 #include <set>
 #include <string>
@@ -40,6 +47,9 @@ struct RoadMarksLine : public XmlNode
     std::string rule = "";
 };
 
+#ifdef PYTHON_BINDING
+void init_roadmark(nb::module_& m);
+#endif
 } // namespace odr
 
 namespace std

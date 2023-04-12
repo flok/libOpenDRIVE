@@ -3,6 +3,13 @@
 #include <map>
 #include <set>
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+namespace nb = nanobind;
+#endif
+
 namespace odr
 {
 
@@ -43,5 +50,10 @@ struct CubicSpline
 
     std::map<double, Poly3> s0_to_poly;
 };
+
+#ifdef PYTHON_BINDING
+void init_cubicspline(nb::module_& m);
+void init_poly3(nb::module_& m);
+#endif
 
 } // namespace odr

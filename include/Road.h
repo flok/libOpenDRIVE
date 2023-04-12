@@ -7,6 +7,13 @@
 #include "RoadObject.h"
 #include "XmlNode.h"
 
+#ifdef PYTHON_BINDING
+    #include <nanobind/nanobind.h>
+    #include <nanobind/stl/map.h>
+    #include <nanobind/stl/string.h>
+namespace nb = nanobind;
+#endif
+
 #include <cstddef>
 #include <map>
 #include <set>
@@ -128,4 +135,7 @@ public:
     std::map<std::string, RoadObject> id_to_object;
 };
 
+#ifdef PYTHON_BINDING
+void init_road(nb::module_& m);
+#endif
 } // namespace odr
