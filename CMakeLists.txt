@@ -40,8 +40,83 @@ add_library(OpenDrive SHARED
     src/RoadNetworkMesh.cpp
     src/RoadObject.cpp
     src/RoutingGraph.cpp
+    include/Geometries/Arc.h
+    include/Geometries/CubicSpline.h
+    include/Geometries/Line.h
+    include/Geometries/ParamPoly3.h
+    include/Geometries/RoadGeometry.h
+    include/Geometries/Spiral.h
+    include/Geometries/Spiral/odrSpiral.h
+    include/Junction.h
+    include/Lane.h
+    include/LaneSection.h
+    include/Mesh.h
+    include/OpenDriveMap.h
+    include/RefLine.h
+    include/Road.h
+    include/RoadMark.h
+    include/RoadNetworkMesh.h
+    include/RoadObject.h
+    include/RoutingGraph.h
     thirdparty/pugixml/pugixml.cpp
 )
 
 add_executable(test-xodr test.cpp)
 target_link_libraries(test-xodr OpenDrive)
+
+
+if(PYTHON_BINDING)
+message("Python Binding building...")
+find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
+
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/nanobind)
+
+nanobind_add_module(pyopendrive 
+    src/Geometries/Arc.cpp
+    src/Geometries/CubicSpline.cpp
+    src/Geometries/Line.cpp
+    src/Geometries/ParamPoly3.cpp
+    src/Geometries/RoadGeometry.cpp
+    src/Geometries/Spiral.cpp
+    src/Geometries/Spiral/odrSpiral.cpp
+    src/Junction.cpp
+    src/Lane.cpp
+    src/LaneSection.cpp
+    src/Mesh.cpp
+    src/OpenDriveMap.cpp
+    src/RefLine.cpp
+    src/Road.cpp
+    src/RoadMark.cpp
+    src/RoadNetworkMesh.cpp
+    src/RoadObject.cpp
+    src/RoutingGraph.cpp
+    src/Binding.cpp
+    include/Geometries/Arc.h
+    include/Geometries/CubicSpline.h
+    include/Geometries/Line.h
+    include/Geometries/ParamPoly3.h
+    include/Geometries/RoadGeometry.h
+    include/Geometries/Spiral.h
+    include/Geometries/Spiral/odrSpiral.h
+    include/Junction.h
+    include/Lane.h
+    include/LaneSection.h
+    include/Mesh.h
+    include/OpenDriveMap.h
+    include/RefLine.h
+    include/Road.h
+    include/RoadMark.h
+    include/RoadNetworkMesh.h
+    include/RoadObject.h
+    include/RoutingGraph.h
+    thirdparty/pugixml/pugixml.cpp
+    )
+
+target_compile_definitions(pyopendrive PRIVATE PYTHON_BINDING)
+
+endif()
