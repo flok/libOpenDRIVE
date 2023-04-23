@@ -1,7 +1,7 @@
 import os
 import pathlib
 
-from setuptools import setup, Extension
+from setuptools import find_packages, setup, Extension
 from setuptools.command.build_ext import build_ext as build_ext_orig
 
 
@@ -31,7 +31,7 @@ class build_ext(build_ext_orig):
 
         # example of cmake args
         cmake_args = [
-            '-DPYTHON_BINDING'
+            '-DPYTHON_BINDING:bool=True',
             '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + str(extdir.parent.absolute()),
         ]
 
@@ -48,9 +48,11 @@ class build_ext(build_ext_orig):
 setup(
     name='pyopendrive',
     version='0.1',
-    packages=["src"],
+    packages=["pyopendrive"],
     ext_modules=[CMakeExtension('pyopendrive')],
     cmdclass={
         'build_ext': build_ext,
-    }
+    },
+    package_data={"pyopendrive": ["pyopendrive/*.py", "pyopendrive/*.pyd"]},
+    include_package_data=True,
 )

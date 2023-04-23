@@ -119,6 +119,17 @@ nanobind_add_module(pyopendrive
 
 target_compile_definitions(pyopendrive PRIVATE PYTHON_BINDING)
 
+# hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
+if ( MSVC )
+    message("TESt")
+    set_target_properties( pyopendrive PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/pyopendrive" )
+    set_target_properties( pyopendrive PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/pyopendrive" )
+    set_target_properties( pyopendrive PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/pyopendrive" )
+    # etc for the other available configuration types (MinSizeRel, RelWithDebInfo)
+endif ( MSVC )
+
+
+#set_target_properties(pyopendrive PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/pyopendrive")
 install(TARGETS pyopendrive LIBRARY DESTINATION .)
 
 endif()
